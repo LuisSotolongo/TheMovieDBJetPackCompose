@@ -28,8 +28,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
-    //061b44b74471c164f4baecc2c453eb91
-//  b0ee4948bdeb056e153d94d957f86e59
+ //MVVM -Model View ViewModel
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
