@@ -3,6 +3,7 @@ package com.lurosotdev.themoviedbapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,6 +20,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,15 +37,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TheMovieDBAPPTheme {
-                val movies = produceState<List<ServerMovie>>(initialValue = emptyList()) {
-                    value = Retrofit.Builder()
-                        .baseUrl("https://api.themoviedb.org/3/")
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build()
-                        .create(MoviesService::class.java)
-                        .getMovies()
-                        .results
-                }
+                  val viewModel: MainViewModel by viewModels()
+               //hacer una conversion entre tipos de estado, el problema que el livedata no esta pensado para nulos, le tenemos que dar un valor por defecto a observerAsState
+                val state by viewModel.state.observeAsState(MainViewModel.UiState())
+                /*
+                * conversion para los estados
+                * val state = viewmodel.state.observerAsState(MainViewModel.UiState())
+                * este seria la mejor opcion porque no repinta la ui
+                *val state by viewModel.state.collectAsState()
+                *
+                * */
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -59,7 +64,7 @@ class MainActivity : ComponentActivity() {
                             verticalArrangement = Arrangement.spacedBy(4.dp),
                             contentPadding = PaddingValues(4.dp)
                         ) {
-                            items(movies.value) { movie ->
+                            items(state.movies) { movie ->
                                 Column {
                                     AsyncImage(
                                         model = "https://image.tmdb.org/t/p/w500${movie.poster_path}",
